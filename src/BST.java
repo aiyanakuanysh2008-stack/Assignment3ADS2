@@ -1,9 +1,10 @@
 import java.util.ArrayList;
 import java.util.Stack;
 
-public class BST<K extends Comparable<K>, V> {
+public class BST<K extends Comparable<K>, V> implements Iterable<BST<K, V>.Entry> {
 
     private Node root;
+    private int size;
 
     private class Node {
         private K key;
@@ -16,11 +17,34 @@ public class BST<K extends Comparable<K>, V> {
         }
     }
 
+    public class Entry {
+        private K key;
+        private V value;
+
+        public Entry(K key, V value) {
+            this.key = key;
+            this.value = value;
+        }
+
+        public K getKey() {
+            return key;
+        }
+
+        public V getValue() {
+            return value;
+        }
+    }
+
+    public int size() {
+        return size;
+    }
+
     public void put(K key, V val) {
         Node newNode = new Node(key, val);
 
         if (root == null) {
             root = newNode;
+            size++;
             return;
         }
 
@@ -32,6 +56,7 @@ public class BST<K extends Comparable<K>, V> {
             if (compare < 0) {
                 if (current.left == null) {
                     current.left = newNode;
+                    size++;
                     return;
                 }
                 current = current.left;
@@ -40,6 +65,7 @@ public class BST<K extends Comparable<K>, V> {
             else if (compare > 0) {
                 if (current.right == null) {
                     current.right = newNode;
+                    size++;
                     return;
                 }
                 current = current.right;
@@ -132,10 +158,12 @@ public class BST<K extends Comparable<K>, V> {
                 successorParent.right = successor.right;
             }
         }
+
+        size--;
     }
 
-    public Iterable<K> iterator() {
-        ArrayList<K> list = new ArrayList<>();
+    public java.util.Iterator<Entry> iterator() {
+        ArrayList<Entry> list = new ArrayList<>();
         Stack<Node> stack = new Stack<>();
 
         Node current = root;
@@ -147,10 +175,10 @@ public class BST<K extends Comparable<K>, V> {
             }
 
             current = stack.pop();
-            list.add(current.key);
+            list.add(new Entry(current.key, current.val));
             current = current.right;
         }
 
-        return list;
+        return list.iterator();
     }
 }
